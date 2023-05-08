@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  tariff-postgres:
+    container_name: tariff-postgres
+    build:
+      context: .
+      dockerfile: docker/tariff-dev/dockerfiles/postgres.dockerfile
+    volumes:
+      - ./docker/dev/db/dumps:/var/lib/postgresql/tariff-postgres/dumps
+      - pgdata:/var/lib/postgresql/tariff-postgres/data
+    ports:
+      - '5439:5432'
+
+  tariff-app:
+    build:
+      context: .
+      dockerfile: docker/tariff-dev/dockerfiles/api.dockerfile
+    container_name: tariff-app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '4011:3000'
+    depends_on:
+      - tariff-postgres
+
+volumes:
+  pgdata:
